@@ -4,10 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import puncha.babyevents.app.util.DateUtil;
@@ -26,7 +23,7 @@ public class BabyEventDal extends DbDalBase {
         super(dbConnection);
     }
 
-    public static String createTableSql(){
+    public static String createTableSql() {
         return
             "CREATE TABLE " + TableName + " (" +
                 ColumnId + " INTEGER PRIMARY KEY AUTOINCREMENT, " +

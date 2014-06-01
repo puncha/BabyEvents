@@ -3,7 +3,6 @@ package puncha.babyevents.app.db;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import puncha.babyevents.app.R;
 import puncha.babyevents.app.util.DateUtil;
 
 public class BabyEventModel {
@@ -55,20 +54,7 @@ public class BabyEventModel {
     @Override
     public String toString() {
         String strDate = new SimpleDateFormat("MM-dd HH:mm").format(date());
-        String strType = getStringforEventResId(BabyEventTypes.getResIdForType(type()));
-        return String.format("%s\t %s: %dml", strDate, strType, quantity());
+        return String.format("date: %s;Type: %d;quantity: %d;", strDate, type(), quantity());
     }
 
-    // TODO: Remove me once we show event without calling Model's toString()
-    public static String getStringforEventResId(int resId){
-        switch (resId) {
-            case R.string.breast_feeding:
-                return "喂母乳";
-            case R.string.milk_feeding:
-            return "喂配方奶";
-            case R.string.change_nappy:
-                return "换尿布";
-        }
-        return "";
-    }
 }

@@ -10,7 +10,6 @@ import android.widget.ArrayAdapter;
 import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import puncha.babyevents.app.db.BabyEventDal;
@@ -67,15 +66,9 @@ public class MainActivity extends ListActivity {
     }
 
     private boolean initData() {
-        List<BabyEventModel> babyEventModels = mEventDal.findAll();
-        List<String> items = new ArrayList<String>();
-        for (BabyEventModel babyEventModel : babyEventModels) {
-            items.add(babyEventModel.toString());
-        }
-
-        ArrayAdapter<CharSequence> arrayAdapter = new ArrayAdapter(
-                this, android.R.layout.simple_list_item_1, items);
-        setListAdapter(arrayAdapter);
+        List<BabyEventModel> events = mEventDal.findAll();
+        BabyEventListViewAdaptor adapter = new BabyEventListViewAdaptor(this, events);
+        setListAdapter(adapter);
         return true;
     }
 
