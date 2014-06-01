@@ -14,6 +14,7 @@ import java.util.List;
 
 import puncha.babyevents.app.db.BabyEventDal;
 import puncha.babyevents.app.db.BabyEventModel;
+import puncha.babyevents.app.db.BabyEventTypes;
 import puncha.babyevents.app.db.DbConnection;
 
 
@@ -65,10 +66,11 @@ public class MainActivity extends ListActivity {
         mEventDal = new BabyEventDal(mDbConn);
     }
 
-    private boolean initData() {
+    private boolean refreshData() {
         List<BabyEventModel> events = mEventDal.findAll();
         BabyEventListViewAdaptor adapter = new BabyEventListViewAdaptor(this, events);
         setListAdapter(adapter);
+        adapter.getFilter().filter("place_holder");
         return true;
     }
 
@@ -84,14 +86,22 @@ public class MainActivity extends ListActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        int eventType = -1;
+        boolean showDetailedView = false;
         switch (id) {
+            case R.id.change_nappy:
+                eventType = BabyEventTypes.CHANGE_NAPPY;
+                showDetailedView = true;
+                break;
             case R.id.breast_feeding:
+                eventType = BabyEventTypes.BREAST_FEEDING;
+                showDetailedView = true;
+                break;
             case R.id.milk_feeding:
-                Intent intent = new Intent(this, FeedMilkDetailActivity.class);
-                startActivity(intent);
+                eventType = BabyEventTypes.MILK_FEEDING;
+                showDetailedView = true;
                 break;
 
-            case R.id.change_nappy:
             case R.id.date_selection:
             case R.id.search:
             case R.id.action_settings:
@@ -102,13 +112,20 @@ public class MainActivity extends ListActivity {
                 break;
         }
 
+        if (showDetailedView) {
+            Intent intent = new Intent(this, FeedMilkDetailActivity.class);
+            intent.putExtra("Type", eventType);
+            startActivity(intent);
+        }
+
+
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        initData();
+        refreshData();
     }
 
     @Override

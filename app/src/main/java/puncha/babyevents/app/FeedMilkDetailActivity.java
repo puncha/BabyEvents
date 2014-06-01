@@ -74,6 +74,7 @@ public class FeedMilkDetailActivity extends Activity {
 
     private void initControlData() {
         // Event Type Spinner
+        // TODO: Improve me!
         Spinner spinner = (Spinner) findViewById(R.id.spinner_type_selection);
         ArrayList<String> eventTypes = new ArrayList();
         for(int eventType: BabyEventTypes.ALL_EVENTS) {
@@ -82,6 +83,17 @@ public class FeedMilkDetailActivity extends Activity {
         }
         ArrayAdapter<CharSequence> adaptor = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, eventTypes);
         spinner.setAdapter(adaptor);
+        int defaultEventType = -1;
+        if (getIntent() != null && getIntent().getExtras() != null)
+            defaultEventType = getIntent().getExtras().getInt("Type", -1);
+        int position = -1;
+        for(int eventType: BabyEventTypes.ALL_EVENTS) {
+            ++position;
+            if (eventType == defaultEventType) {
+                spinner.setSelection(position, true);
+            }
+        }
+
 
         // Predefined Quantity Spinner
         final Context that = this;
@@ -165,14 +177,8 @@ public class FeedMilkDetailActivity extends Activity {
     }
 
     private int getSelectedEventType() {
-        switch (mSpinner.getSelectedItemPosition()) {
-            case 0:
-                return BabyEventTypes.BREAST_FEEDING;
-            case 1:
-                return BabyEventTypes.MILK_FEEDING;
-            default:
-                return BabyEventTypes.CHANGE_NAPPY;
-        }
+        int position = mSpinner.getSelectedItemPosition();
+        return BabyEventTypes.ALL_EVENTS[position];
     }
 
     @Override
