@@ -1,0 +1,39 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="puncha.babyevents.app.MainActivity"
+    tools:ignore="AppCompatResource">
+    <item
+        android:id="@+id/date_selection"
+        android:actionProviderClass="puncha.babyevents.app.provider.DateSelectionProvider"
+        android:showAsAction="ifRoom"
+        android:title="@android:string/search_go" />
+    <item
+        android:id="@+id/search"
+        android:actionViewClass="android.widget.SearchView"
+        android:icon="@android:drawable/ic_menu_search"
+        android:showAsAction="ifRoom"
+        android:visible="false"
+        android:title="@android:string/search_go" />
+    <item
+        android:id="@+id/breast_feeding"
+        android:icon="@drawable/ic_action_breast_feeding"
+        android:showAsAction="ifRoom"
+        android:title="@string/breast_feeding" />
+    <item
+        android:id="@+id/milk_feeding"
+        android:icon="@drawable/ic_action_feed_milk"
+        android:showAsAction="ifRoom"
+        android:title="@string/milk_feeding" />
+    <item
+        android:id="@+id/change_nappy"
+        android:icon="@drawable/ic_action_change_nappy"
+        android:showAsAction="ifRoom"
+        android:title="@string/change_nappy" />
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_action_settings"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_settings" />
+</menu>

@@ -1,0 +1,21 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="android:Theme.Holo">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="event_detail_first_column">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingRight">30dp</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    </style>
+    <style name="event_detail_second_column">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginRight">20dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+    </style>
+</resources>

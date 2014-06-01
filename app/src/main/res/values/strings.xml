@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Baby Events</string>
+    <string name="action_settings">Settings</string>
+    <string name="change_nappy">Change Nappy</string>
+    <string name="milk_feeding">Milk Feeding</string>
+    <string name="not_implemented">Not implemented</string>
+    <string name="unknown_options">Unknown options</string>
+    <string name="date_format">MM-dd</string>
+    <string name="set_date">Date</string>
+    <string name="set_quantity">Quantity(ml)</string>
+    <string name="set_type">Type</string>
+    <string name="show_predefined">Predefined</string>
+    <string name="select_event_datetime">Select event data and time</string>
+    <string name="breast_feeding">Breast Feeding</string>
+
+</resources>

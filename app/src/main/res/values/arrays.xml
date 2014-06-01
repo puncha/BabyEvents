@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="actionBar_viewControls_main">
+        <item>View Events</item>
+        <item>View Report</item>
+    </string-array>
+
+    <string-array name="predefined_quantities">
+        <item>100</item>
+        <item>120</item>
+        <item>140</item>
+        <item>160</item>
+        <item>180</item>
+        <item>200</item>
+        <item>220</item>
+    </string-array>
+
+</resources>

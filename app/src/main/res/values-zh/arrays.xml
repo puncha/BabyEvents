@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="actionBar_viewControls_main">
+        <item>事件视图</item>
+        <item>查看报表</item>
+    </string-array>
+
+</resources>
