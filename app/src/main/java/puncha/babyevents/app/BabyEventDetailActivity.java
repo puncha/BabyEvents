@@ -129,8 +129,13 @@ public class BabyEventDetailActivity extends Activity {
         mEditDateTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DateTimePickerDialog dialog = new DateTimePickerDialog(
-                        R.string.select_event_datetime, mSelectedDate, new DateTimePickerDialog.Callback() {
+                Bundle bundle = new Bundle();
+                bundle.putInt("titleResId", R.string.select_event_datetime);
+                bundle.putLong("defaultDate", mSelectedDate.getTime());
+
+                DateTimePickerDialog dialog = new DateTimePickerDialog();
+                dialog.setArguments(bundle);
+                dialog.setOnDateTimeSetListener(new DateTimePickerDialog.Callback() {
                     @Override
                     public void onDateTimeSet(Date date) {
                         mSelectedDate = date;

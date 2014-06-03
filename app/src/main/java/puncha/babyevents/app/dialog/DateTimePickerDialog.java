@@ -24,15 +24,17 @@ public class DateTimePickerDialog extends DialogFragment {
     private Date mDate;
     private Callback mCallback;
 
-    public DateTimePickerDialog(int titleResId, Date defaultDate, Callback callback) {
-        mTitleResId = titleResId;
-        mDate = defaultDate;
+    public void setOnDateTimeSetListener(Callback callback) {
         mCallback = callback;
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle arguments = getArguments();
+        mTitleResId = arguments.getInt("titleResId");
+        mDate = new Date(arguments.getLong("defaultDate"));
     }
 
     @Override
