@@ -3,6 +3,8 @@ package puncha.babyevents.app.db;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Date;
+
 public class BabyEventModelParcelable implements Parcelable {
 
     public static final Creator<BabyEventModelParcelable> CREATOR =
@@ -32,6 +34,7 @@ public class BabyEventModelParcelable implements Parcelable {
         mEvent.id(parcel.readLong());
         mEvent.type(parcel.readInt());
         mEvent.quantity(parcel.readInt());
+        mEvent.date(new Date(parcel.readLong()));
     }
 
 
@@ -46,6 +49,7 @@ public class BabyEventModelParcelable implements Parcelable {
         parcel.writeLong(mEvent.id());
         parcel.writeInt(mEvent.type());
         parcel.writeInt(mEvent.quantity());
+        parcel.writeLong(mEvent.date().getTime());
     }
 
 }

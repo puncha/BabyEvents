@@ -103,6 +103,9 @@ public class BabyEventDetailActivity extends Activity {
         // Quantity EditBox
         mEditQuantity.setText(String.valueOf(mEvent.quantity()));
 
+        // DateTimePicker
+        mSelectedDate = mEvent.date();
+
         // Predefined Quantity Spinner
         final Context that = this;
         ImageButton button = (ImageButton) findViewById(R.id.button_predefined_quantity);
