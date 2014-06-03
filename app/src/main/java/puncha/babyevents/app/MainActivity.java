@@ -6,9 +6,11 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.ListView;
@@ -44,7 +46,19 @@ public class MainActivity extends ListActivity implements ActionBar.OnNavigation
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initActionBar();
+        initContextMenu();
         initDb();
+    }
+
+    private void initContextMenu() {
+        assert getListView() != null;
+        getListView().setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+            @Override
+            public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+                contextMenu.setHeaderTitle(getString(R.string.event_operation));
+                getMenuInflater().inflate(R.menu.ctx_main, contextMenu);
+            }
+        });
     }
 
     private boolean initActionBar() {
@@ -122,8 +136,29 @@ public class MainActivity extends ListActivity implements ActionBar.OnNavigation
     }
 
     @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.delete_event:
+                AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+                assert(info != null);
+                BabyEventModel event = getEventByPosition(info.position);
+                assert (event != null);
+                mEventDal.delete(event);
+                refreshData();
+                return true;
+        }
+
+
+        return super.onContextItemSelected(item);
+    }
+
+    private BabyEventModel getEventByPosition(int position) {
+        return mAdapter.getItem(position);
+    }
+
+    @Override
     protected void onListItemClick(ListView listView, View view, int position, long id) {
-        BabyEventModel event = mAdapter.getItem(position);
+        BabyEventModel event = getEventByPosition(position);
         assert (event != null);
         startEventItemDetailedActivity(event);
         super.onListItemClick(listView, view, position, id);

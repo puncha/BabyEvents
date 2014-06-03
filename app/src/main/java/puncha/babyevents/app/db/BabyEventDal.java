@@ -16,8 +16,9 @@ public class BabyEventDal extends DbDalBase {
     public static final String ColumnType = "type";
     public static final String ColumnQuantity = "quantity";
     public static final String ColumnDateTime = "datetime";
-
     public static final String[] AllColumns = {ColumnId, ColumnType, ColumnQuantity, ColumnDateTime};
+
+    public static final String WhereClause = "id=?";
 
     public BabyEventDal(DbConnection dbConnection) {
         super(dbConnection);
@@ -31,30 +32,6 @@ public class BabyEventDal extends DbDalBase {
                 ColumnQuantity + " INTEGER, " +
                 ColumnDateTime + " DATETIME" +
             ")";
-    }
-
-    public BabyEventModel create(BabyEventModel event) {
-        assert (event != null);
-        ContentValues values = createContentValuesForEvent(event);
-        long id = getDb().insert(TableName, null, values);
-        event.id(id);
-        return event;
-    }
-
-    public BabyEventModel update(BabyEventModel event) {
-        assert (event != null);
-        ContentValues values = createContentValuesForEvent(event);
-        String[] params = {String.valueOf(event.id())};
-        getDb().update(TableName, values, "id=?", params);
-        return event;
-    }
-
-    private ContentValues createContentValuesForEvent(BabyEventModel event) {
-        ContentValues values = new ContentValues();
-        values.put(ColumnType, event.type());
-        values.put(ColumnQuantity, event.quantity());
-        values.put(ColumnDateTime, DateUtil.ToSqliteAwareString(event.utcDate()));
-        return values;
     }
 
     public List<BabyEventModel> findAll() {
@@ -76,5 +53,37 @@ public class BabyEventDal extends DbDalBase {
         }
 
         return babyEventModels;
+    }
+
+    public boolean create(BabyEventModel event) {
+        assert (event != null);
+        ContentValues values = createContentValuesForEvent(event);
+        long id = getDb().insert(TableName, null, values);
+        event.id(id);
+        return true;
+    }
+
+    public boolean update(BabyEventModel event) {
+        assert (event != null);
+        ContentValues values = createContentValuesForEvent(event);
+        getDb().update(TableName, values, WhereClause, constructWhereClauseById(event));
+        return true;
+    }
+
+    public boolean delete(BabyEventModel event) {
+        getDb().delete(TableName, WhereClause, constructWhereClauseById(event));
+        return true;
+    }
+
+    private ContentValues createContentValuesForEvent(BabyEventModel event) {
+        ContentValues values = new ContentValues();
+        values.put(ColumnType, event.type());
+        values.put(ColumnQuantity, event.quantity());
+        values.put(ColumnDateTime, DateUtil.ToSqliteAwareString(event.utcDate()));
+        return values;
+    }
+
+    private String[] constructWhereClauseById(BabyEventModel event) {
+        return new String[]{String.valueOf(event.id())};
     }
 }

@@ -14,5 +14,7 @@
     <string name="show_predefined">Predefined</string>
     <string name="select_event_datetime">Select event data and time</string>
     <string name="breast_feeding">Breast Feeding</string>
+    <string name="delete">Delete</string>
+    <string name="event_operation">Operation to this event</string>
 
 </resources>
