@@ -24,7 +24,7 @@ public class DateTimePickerDialog extends DialogFragment {
     private Date mDate;
     private Callback mCallback;
 
-    DateTimePickerDialog(int titleResId, Date defaultDate, Callback callback) {
+    public DateTimePickerDialog(int titleResId, Date defaultDate, Callback callback) {
         mTitleResId = titleResId;
         mDate = defaultDate;
         mCallback = callback;
