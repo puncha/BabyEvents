@@ -39,4 +39,11 @@ public class DateUtil {
             return new Date();
         }
     }
+
+    public static void setTimeToZeroClock(Date date) {
+        date.setHours(0);
+        date.setMinutes(0);
+        date.setSeconds(0);
+    }
+
 }

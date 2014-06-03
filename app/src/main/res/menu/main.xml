@@ -5,16 +5,8 @@
     tools:ignore="AppCompatResource">
     <item
         android:id="@+id/date_selection"
-        android:actionProviderClass="puncha.babyevents.app.provider.DateSelectionProvider"
-        android:showAsAction="ifRoom"
-        android:title="@android:string/search_go" />
-    <item
-        android:id="@+id/search"
-        android:actionViewClass="android.widget.SearchView"
-        android:icon="@android:drawable/ic_menu_search"
-        android:showAsAction="ifRoom"
-        android:visible="false"
-        android:title="@android:string/search_go" />
+        android:showAsAction="always"
+        android:title="" />
     <item
         android:id="@+id/breast_feeding"
         android:icon="@drawable/ic_action_breast_feeding"

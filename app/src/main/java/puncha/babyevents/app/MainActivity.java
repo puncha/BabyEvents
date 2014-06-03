@@ -1,32 +1,48 @@
 package puncha.babyevents.app;
 
 import android.app.ActionBar;
+import android.app.DatePickerDialog;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
+import android.widget.ListView;
 import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import puncha.babyevents.app.db.BabyEventDal;
 import puncha.babyevents.app.db.BabyEventModel;
+import puncha.babyevents.app.db.BabyEventModelParcelable;
 import puncha.babyevents.app.db.BabyEventTypes;
 import puncha.babyevents.app.db.DbConnection;
+import puncha.babyevents.app.util.DateUtil;
 
 
-public class MainActivity extends ListActivity {
+public class MainActivity extends ListActivity implements ActionBar.OnNavigationListener {
 
     private DbConnection mDbConn;
     private BabyEventDal mEventDal;
+    private Date mDateFilter;
+    private BabyEventListViewAdapter mAdapter;
+    private MenuItem mDateFilterMenuItem;
+
+    public MainActivity() {
+        mDateFilter = new Date();
+        DateUtil.setTimeToZeroClock(mDateFilter);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         initActionBar();
         initDb();
     }
@@ -39,24 +55,7 @@ public class MainActivity extends ListActivity {
                 this, R.array.actionBar_viewControls_main,
                 android.R.layout.simple_spinner_dropdown_item);
 
-        final MainActivity that = this;
-        actionBar.setListNavigationCallbacks(spinnerAdapter, new ActionBar.OnNavigationListener() {
-            @Override
-            public boolean onNavigationItemSelected(int itemPosition, long id) {
-                switch (itemPosition) {
-                    case 0:
-                        // Nothing to show. We are in the Events view now!
-                        break;
-                    case 1:
-                        Toast.makeText(that, R.string.not_implemented, Toast.LENGTH_SHORT).show();
-                        break;
-                    default:
-                        Toast.makeText(that, R.string.unknown_options, Toast.LENGTH_SHORT).show();
-                        break;
-                }
-                return true;
-            }
-        });
+        actionBar.setListNavigationCallbacks(spinnerAdapter, this);
 
         return true;
     }
@@ -66,17 +65,43 @@ public class MainActivity extends ListActivity {
         mEventDal = new BabyEventDal(mDbConn);
     }
 
-    private boolean refreshData() {
+    private void refreshFilterText() {
+        mAdapter.getFilter().filter(new SimpleDateFormat("yyyy-MM-dd").format(mDateFilter));
+    }
+
+    private void refreshData() {
         List<BabyEventModel> events = mEventDal.findAll();
-        BabyEventListViewAdaptor adapter = new BabyEventListViewAdaptor(this, events);
-        setListAdapter(adapter);
-        adapter.getFilter().filter("place_holder");
+        mAdapter = new BabyEventListViewAdapter(this, events);
+        setListAdapter(mAdapter);
+        refreshFilterText();
+    }
+
+    private void refreshMenuText() {
+        if (mDateFilterMenuItem != null)
+            mDateFilterMenuItem.setTitle(new SimpleDateFormat("MM-dd").format(mDateFilter));
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(int itemPosition, long id) {
+        switch (itemPosition) {
+            case 0:
+                // Nothing to show. We are in the Events view now!
+                break;
+            case 1:
+                Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                Toast.makeText(this, R.string.unknown_options, Toast.LENGTH_SHORT).show();
+                break;
+        }
         return true;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+        mDateFilterMenuItem = menu.findItem(R.id.date_selection);
+        refreshMenuText();
         return true;
     }
 
@@ -86,24 +111,41 @@ public class MainActivity extends ListActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        int eventType = -1;
-        boolean showDetailedView = false;
+
+        int iBabyEventType = OptionItemIdToEventType.getType(id);
+        boolean isBabyEvent = (iBabyEventType != -1);
+        if (isBabyEvent)
+            onBabyEventOptionItemsClicked(iBabyEventType);
+        else
+            onNonEventOptionsItemsClicked(id);
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onListItemClick(ListView listView, View view, int position, long id) {
+        BabyEventModel event = mAdapter.getItem(position);
+        assert (event != null);
+        startEventItemDetailedActivity(event);
+        super.onListItemClick(listView, view, position, id);
+    }
+
+    private void onBabyEventOptionItemsClicked(int eventType) {
+        BabyEventModel event = BabyEventModel.createInstanceWithType(eventType);
+        startEventItemDetailedActivity(event);
+    }
+
+    void startEventItemDetailedActivity(BabyEventModel event) {
+        Intent intent = new Intent(this, FeedMilkDetailActivity.class);
+        intent.putExtra(BabyEventModel.class.toString(), new BabyEventModelParcelable(event));
+        startActivity(intent);
+    }
+
+    private void onNonEventOptionsItemsClicked(int id) {
         switch (id) {
-            case R.id.change_nappy:
-                eventType = BabyEventTypes.CHANGE_NAPPY;
-                showDetailedView = true;
-                break;
-            case R.id.breast_feeding:
-                eventType = BabyEventTypes.BREAST_FEEDING;
-                showDetailedView = true;
-                break;
-            case R.id.milk_feeding:
-                eventType = BabyEventTypes.MILK_FEEDING;
-                showDetailedView = true;
+            case R.id.date_selection:
+                onDataSelectionOptionItemClicked(this);
                 break;
 
-            case R.id.date_selection:
-            case R.id.search:
             case R.id.action_settings:
                 Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
                 break;
@@ -111,15 +153,22 @@ public class MainActivity extends ListActivity {
                 Toast.makeText(this, R.string.unknown_options, Toast.LENGTH_SHORT);
                 break;
         }
+    }
 
-        if (showDetailedView) {
-            Intent intent = new Intent(this, FeedMilkDetailActivity.class);
-            intent.putExtra("Type", eventType);
-            startActivity(intent);
-        }
-
-
-        return super.onOptionsItemSelected(item);
+    private void onDataSelectionOptionItemClicked(Context that) {
+        Date today = new Date();
+        DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                mDateFilter.setYear(year - 1900);
+                mDateFilter.setMonth(month);
+                mDateFilter.setDate(day);
+                refreshMenuText();
+                refreshFilterText();
+            }
+        };
+        DatePickerDialog dialog = new DatePickerDialog(that, listener, today.getYear() + 1900, today.getMonth(), today.getDate());
+        dialog.show();
     }
 
     @Override
@@ -133,5 +182,31 @@ public class MainActivity extends ListActivity {
         super.onPause();
         mDbConn.close();
     }
+
+
+    // Helper class to map option item to event type
+    private static class OptionItemIdToEventType {
+        final static int[] ACTION_BUTTON_IDS = {
+                R.id.breast_feeding,
+                R.id.milk_feeding,
+                R.id.change_nappy,
+        };
+        final static int[] EVENT_TYPE = {
+                BabyEventTypes.BREAST_FEEDING,
+                BabyEventTypes.MILK_FEEDING,
+                BabyEventTypes.CHANGE_NAPPY
+        };
+
+        public static int getType(int actionBtnId) {
+            int index = 0;
+            for (int btnId : ACTION_BUTTON_IDS) {
+                if (btnId == actionBtnId)
+                    return EVENT_TYPE[index];
+                ++index;
+            }
+            return -1;
+        }
+    }
+
 
 }

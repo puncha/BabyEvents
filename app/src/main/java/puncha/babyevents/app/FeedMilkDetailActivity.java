@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -21,6 +20,7 @@ import java.util.Date;
 
 import puncha.babyevents.app.db.BabyEventDal;
 import puncha.babyevents.app.db.BabyEventModel;
+import puncha.babyevents.app.db.BabyEventModelParcelable;
 import puncha.babyevents.app.db.BabyEventTypes;
 import puncha.babyevents.app.db.DbConnection;
 
@@ -36,6 +36,7 @@ public class FeedMilkDetailActivity extends Activity {
 
     // Data
     private Date mSelectedDate;
+    private BabyEventModel mEvent;
 
     public FeedMilkDetailActivity(){
         mSelectedDate = new Date();
@@ -73,6 +74,13 @@ public class FeedMilkDetailActivity extends Activity {
     }
 
     private void initControlData() {
+        assert (getIntent() != null);
+        assert (getIntent().getExtras() != null);
+
+        BabyEventModelParcelable parcelable =
+                (BabyEventModelParcelable) getIntent().getExtras().get(BabyEventModel.class.toString());
+        mEvent = parcelable.event();
+
         // Event Type Spinner
         // TODO: Improve me!
         Spinner spinner = (Spinner) findViewById(R.id.spinner_type_selection);
@@ -83,17 +91,16 @@ public class FeedMilkDetailActivity extends Activity {
         }
         ArrayAdapter<CharSequence> adaptor = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, eventTypes);
         spinner.setAdapter(adaptor);
-        int defaultEventType = -1;
-        if (getIntent() != null && getIntent().getExtras() != null)
-            defaultEventType = getIntent().getExtras().getInt("Type", -1);
         int position = -1;
         for(int eventType: BabyEventTypes.ALL_EVENTS) {
             ++position;
-            if (eventType == defaultEventType) {
+            if (eventType == mEvent.type()) {
                 spinner.setSelection(position, true);
             }
         }
 
+        // Quantity EditBox
+        mEditQuantity.setText(String.valueOf(mEvent.quantity()));
 
         // Predefined Quantity Spinner
         final Context that = this;
@@ -150,7 +157,7 @@ public class FeedMilkDetailActivity extends Activity {
         int id = item.getItemId();
         switch (id) {
             case R.id.ok:
-                boolean eventCreated = createNewEvent();
+                boolean eventCreated = saveEvent();
                 if (!eventCreated) {
                     // TODO: Report error!
                 }
@@ -166,14 +173,24 @@ public class FeedMilkDetailActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean createNewEvent() {
-        BabyEventModel event = new BabyEventModel();
-        event.type(getSelectedEventType());
-        event.date(mSelectedDate);
-        event.quantity(Integer.valueOf(mEditQuantity.getText().toString()));
+    private boolean saveEvent() {
+        getDataFromUI();
+        return pushEventToDB();
+    }
 
-        mEventDal.create(event);
+    private boolean pushEventToDB() {
+        if (mEvent.id() != -1)
+            mEventDal.update(mEvent);
+        else
+            mEventDal.create(mEvent);
         return true;
+    }
+
+    private void getDataFromUI() {
+        // TODO: should we update the event when user makes changes in the UI immediately?
+        mEvent.type(getSelectedEventType());
+        mEvent.date(mSelectedDate);
+        mEvent.quantity(Integer.valueOf(mEditQuantity.getText().toString()));
     }
 
     private int getSelectedEventType() {

@@ -1,5 +1,8 @@
 package puncha.babyevents.app.db;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -10,6 +13,21 @@ public class BabyEventModel {
     private int mType;
     private int mQuantity;
     private Date mDateTime;
+
+    public BabyEventModel() {
+        mId = -1;
+        mType = -1;
+        mQuantity = -1;
+        mDateTime = new Date();
+    }
+
+    public static BabyEventModel createInstanceWithType(int eventType) {
+        BabyEventModel event = new BabyEventModel();
+        event.id(-1);
+        event.type(eventType);
+        event.quantity(0);
+        return event;
+    }
 
     public long id() {
         return this.mId;
@@ -56,5 +74,4 @@ public class BabyEventModel {
         String strDate = new SimpleDateFormat("MM-dd HH:mm").format(date());
         return String.format("date: %s;Type: %d;quantity: %d;", strDate, type(), quantity());
     }
-
 }

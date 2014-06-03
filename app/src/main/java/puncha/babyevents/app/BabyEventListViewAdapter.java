@@ -7,23 +7,25 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.TextView;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import puncha.babyevents.app.db.BabyEventModel;
 import puncha.babyevents.app.db.BabyEventTypes;
+import puncha.babyevents.app.util.DateUtil;
 
 
-public class BabyEventListViewAdaptor extends ArrayAdapter<BabyEventModel> {
+public class BabyEventListViewAdapter extends ArrayAdapter<BabyEventModel> {
 
-    Object mLock;
+    final Object mLock;
     List<BabyEventModel> mData;
     Filter mFilter;
 
-    public BabyEventListViewAdaptor(Context context, List<BabyEventModel> objects) {
+    public BabyEventListViewAdapter(Context context, List<BabyEventModel> objects) {
         super(context, R.layout.view_baby_event_item, R.id.time, objects);
         mLock = new Object();
         mData = objects;
@@ -49,11 +51,6 @@ public class BabyEventListViewAdaptor extends ArrayAdapter<BabyEventModel> {
     @Override
     public int getPosition(BabyEventModel item) {
         return mData.indexOf(item);
-    }
-
-    @Override
-    public void addAll(Collection<? extends BabyEventModel> collection) {
-        super.addAll(collection);
     }
 
     @Override
@@ -87,22 +84,29 @@ public class BabyEventListViewAdaptor extends ArrayAdapter<BabyEventModel> {
 
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
-            // Create another copy of original data
+            // Keep a copy of original data so that we can release the lock then.
             List<BabyEventModel> events = new ArrayList<BabyEventModel>();
             synchronized (mLock) {
-                for(int i = 0; i<BabyEventListViewAdaptor.super.getCount(); ++i)
-                    events.add(BabyEventListViewAdaptor.super.getItem(i));
+                for(int i = 0; i<BabyEventListViewAdapter.super.getCount(); ++i)
+                    events.add(BabyEventListViewAdapter.super.getItem(i));
             }
 
             // Start filtering
-            Date today = new Date();
-            today.setHours(0);
-            today.setMinutes(0);
-            today.setSeconds(0);
+            Date startDate, endDate;
+            try {
+                startDate = new SimpleDateFormat("yyyy-MM-dd").parse(charSequence.toString());
+            }catch (ParseException exp){
+                startDate = new Date();
+                DateUtil.setTimeToZeroClock(startDate);
+            }
+            Calendar cale = Calendar.getInstance();
+            cale.setTime(startDate);
+            cale.add(Calendar.DATE, 1);
+            endDate = cale.getTime();
             List<BabyEventModel> filteredEvents = new ArrayList<BabyEventModel>();
             for (int i = 0; i < events.size(); ++i) {
                 BabyEventModel event = events.get(i);
-                if (!event.date().before(today)) { // after or equal
+                if (!event.date().before(startDate) && !event.date().after(endDate)) { // after or equal
                     filteredEvents.add(event);
                 }
             }
@@ -116,11 +120,7 @@ public class BabyEventListViewAdaptor extends ArrayAdapter<BabyEventModel> {
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
             mData = (List<BabyEventModel>) filterResults.values;
-            //if (mData.size() > 0)
-                notifyDataSetChanged();
-//            else
-//                notifyDataSetInvalidated();
+            notifyDataSetChanged();
         }
     }
-
 }

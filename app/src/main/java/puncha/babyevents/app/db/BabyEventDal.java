@@ -33,14 +33,28 @@ public class BabyEventDal extends DbDalBase {
             ")";
     }
 
-    public BabyEventModel create(BabyEventModel babyEventModel) {
-        ContentValues values = new ContentValues();
-        values.put(ColumnType, babyEventModel.type());
-        values.put(ColumnQuantity, babyEventModel.quantity());
-        values.put(ColumnDateTime, DateUtil.ToSqliteAwareString(babyEventModel.utcDate()));
+    public BabyEventModel create(BabyEventModel event) {
+        assert (event != null);
+        ContentValues values = createContentValuesForEvent(event);
         long id = getDb().insert(TableName, null, values);
-        babyEventModel.id(id);
-        return babyEventModel;
+        event.id(id);
+        return event;
+    }
+
+    public BabyEventModel update(BabyEventModel event) {
+        assert (event != null);
+        ContentValues values = createContentValuesForEvent(event);
+        String[] params = {String.valueOf(event.id())};
+        getDb().update(TableName, values, "id=?", params);
+        return event;
+    }
+
+    private ContentValues createContentValuesForEvent(BabyEventModel event) {
+        ContentValues values = new ContentValues();
+        values.put(ColumnType, event.type());
+        values.put(ColumnQuantity, event.quantity());
+        values.put(ColumnDateTime, DateUtil.ToSqliteAwareString(event.utcDate()));
+        return values;
     }
 
     public List<BabyEventModel> findAll() {
