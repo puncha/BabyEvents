@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -81,6 +82,9 @@ public class BabyEventDetailActivity extends Activity {
         BabyEventModelParcelable parcelable =
                 (BabyEventModelParcelable) getIntent().getExtras().get(BabyEventModel.class.toString());
         mEvent = parcelable.event();
+
+        // Date Time
+        mEditDateTime.setInputType(InputType.TYPE_NULL);
 
         // Event Type Spinner
         // TODO: Improve me!
