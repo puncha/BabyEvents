@@ -191,7 +191,7 @@ public class MainActivity extends ListActivity implements ActionBar.OnNavigation
     }
 
     private void onDataSelectionOptionItemClicked(Context that) {
-        Date today = new Date();
+
         DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
@@ -202,7 +202,8 @@ public class MainActivity extends ListActivity implements ActionBar.OnNavigation
                 refreshFilterText();
             }
         };
-        DatePickerDialog dialog = new DatePickerDialog(that, listener, today.getYear() + 1900, today.getMonth(), today.getDate());
+        DatePickerDialog dialog = new DatePickerDialog(
+                that, listener, mDateFilter.getYear() + 1900, mDateFilter.getMonth(), mDateFilter.getDate());
         dialog.show();
     }
 
