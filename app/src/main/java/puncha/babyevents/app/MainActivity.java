@@ -135,7 +135,7 @@ public class MainActivity extends ListActivity implements ActionBar.OnNavigation
     }
 
     void startEventItemDetailedActivity(BabyEventModel event) {
-        Intent intent = new Intent(this, FeedMilkDetailActivity.class);
+        Intent intent = new Intent(this, BabyEventDetailActivity.class);
         intent.putExtra(BabyEventModel.class.toString(), new BabyEventModelParcelable(event));
         startActivity(intent);
     }
