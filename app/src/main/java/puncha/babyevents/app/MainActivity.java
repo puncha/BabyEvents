@@ -1,14 +1,26 @@
 package puncha.babyevents.app;
 
 import android.app.ActionBar;
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
+import puncha.babyevents.app.fragment.EventFragment;
+import puncha.babyevents.app.fragment.ReportFragment;
 
-public class MainActivity extends FragmentActivity implements ActionBar.OnNavigationListener {
+
+public class MainActivity extends Activity implements ActionBar.OnNavigationListener {
+
+    FrameLayout mFragmentContainer;
+    Fragment mEventFragment;
+    Fragment mReportFragment;
 
     public MainActivity() {
     }
@@ -17,7 +29,28 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        init();
+    }
+
+    private void init() {
+        initControls();
         initActionBar();
+    }
+
+    private void initControls() {
+        mFragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
+    }
+
+    private Fragment getEventFragment() {
+        if (mEventFragment == null)
+            mEventFragment = new EventFragment();
+        return mEventFragment;
+    }
+
+    private Fragment getReportFragment() {
+        if (mReportFragment == null)
+            mReportFragment = new ReportFragment();
+        return mReportFragment;
     }
 
     private boolean initActionBar() {
@@ -35,12 +68,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long id) {
+        FragmentTransaction trans;
         switch (itemPosition) {
             case 0:
-                // Nothing to show. We are in the Events view now!
+                String fragmentName = getEventFragment().getClass().toString();
+                Log.i("TAG", fragmentName);
+                trans = getFragmentManager().beginTransaction();
+                trans.replace(mFragmentContainer.getId(), getEventFragment(), fragmentName);
+                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                Fragment found = getFragmentManager().findFragmentByTag(fragmentName);
+                trans.commit();
                 break;
             case 1:
-                Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
+                Log.i("TAG", String.valueOf(getReportFragment().getId()));
+                trans = getFragmentManager().beginTransaction();
+                trans.replace(mFragmentContainer.getId(), getReportFragment());
+                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                trans.commit();
                 break;
             default:
                 Toast.makeText(this, R.string.unknown_options, Toast.LENGTH_SHORT).show();
