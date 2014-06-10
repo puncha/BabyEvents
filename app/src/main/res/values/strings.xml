@@ -16,5 +16,8 @@
     <string name="breast_feeding">Breast Feeding</string>
     <string name="delete">Delete</string>
     <string name="event_operation">Operation to this event</string>
+    <string name="event_report_breast_feeding">Breast Feeding: %d ml</string>
+    <string name="event_report_milk_feeding">Milk Feeding: %d ml</string>
+    <string name="event_report_change_nappy">Nappy Changed: %d</string>
 
 </resources>

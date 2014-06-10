@@ -34,25 +34,27 @@ public class BabyEventDal extends DbDalBase {
             ")";
     }
 
-    public List<BabyEventModel> findAll() {
-        List<BabyEventModel> babyEventModels = new ArrayList<BabyEventModel>();
+    public List<BabyEventReport> getEventReport() {
+        List<BabyEventReport> reports = new ArrayList<BabyEventReport>();
 
-        Cursor cursor = getDb().query(TableName, AllColumns, null, null, null, null, null);
+        String query = "SELECT type, SUM(quantity), COUNT(quantity), strftime('%Y-%m-%d', datetime, 'localtime') as DAY " +
+                       "FROM Events " +
+                       "GROUP BY DAY, TYPE " +
+                       "ORDER BY DAY";
+
+        Cursor cursor = getDb().rawQuery(query, null);
         while (cursor.moveToNext()) {
-            BabyEventModel babyEventModel = new BabyEventModel();
+            int type = cursor.getInt(0);
+            long quantity = cursor.getLong(1);
+            int count = cursor.getInt(2);
+            String date = cursor.getString(3);
 
-            babyEventModel.id(cursor.getLong(cursor.getColumnIndex(ColumnId)));
-            babyEventModel.quantity(cursor.getInt(cursor.getColumnIndex(ColumnQuantity)));
-            babyEventModel.type(cursor.getInt(cursor.getColumnIndex(ColumnType)));
-            // datetime
-            String dateFromDb = cursor.getString(cursor.getColumnIndex(ColumnDateTime));
-            babyEventModel.utcDate(DateUtil.FromSqliteAwareString(dateFromDb));
-
-            babyEventModels.add(babyEventModel);
-            Log.i("BabyEvents", babyEventModel.toString());
+            BabyEventReport report = new BabyEventReport(type, quantity, count, date);
+            reports.add(report);
+            Log.i("BabyEvents", report.toString());
         }
 
-        return babyEventModels;
+        return reports;
     }
 
     public boolean create(BabyEventModel event) {
@@ -74,6 +76,28 @@ public class BabyEventDal extends DbDalBase {
         getDb().delete(TableName, WhereClause, constructWhereClauseById(event));
         return true;
     }
+
+    public List<BabyEventModel> findAll() {
+        List<BabyEventModel> babyEventModels = new ArrayList<BabyEventModel>();
+
+        Cursor cursor = getDb().query(TableName, AllColumns, null, null, null, null, null);
+        while (cursor.moveToNext()) {
+            BabyEventModel babyEventModel = new BabyEventModel();
+
+            babyEventModel.id(cursor.getLong(cursor.getColumnIndex(ColumnId)));
+            babyEventModel.quantity(cursor.getInt(cursor.getColumnIndex(ColumnQuantity)));
+            babyEventModel.type(cursor.getInt(cursor.getColumnIndex(ColumnType)));
+            // datetime
+            String dateFromDb = cursor.getString(cursor.getColumnIndex(ColumnDateTime));
+            babyEventModel.utcDate(DateUtil.FromSqliteAwareString(dateFromDb));
+
+            babyEventModels.add(babyEventModel);
+            Log.i("BabyEvents", babyEventModel.toString());
+        }
+
+        return babyEventModels;
+    }
+
 
     private ContentValues createContentValuesForEvent(BabyEventModel event) {
         ContentValues values = new ContentValues();

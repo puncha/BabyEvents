@@ -16,5 +16,8 @@
     <string name="select_event_datetime">选择事件的日期和时间</string>
     <string name="delete">删除</string>
     <string name="event_operation">执行对该事件的操作</string>
+    <string name="event_report_breast_feeding">喝了母乳：%d ml</string>
+    <string name="event_report_milk_feeding">喝了配方奶：%d ml</string>
+    <string name="event_report_change_nappy">尿布换了：%d 次</string>
 
 </resources>
