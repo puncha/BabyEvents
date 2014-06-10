@@ -38,7 +38,6 @@ public class EventFragment extends ListFragment {
 
     public EventFragment() {
         mDateFilter = new Date();
-        mDateFilter.setDate(4);
         DateUtil.setTimeToZeroClock(mDateFilter);
     }
 
